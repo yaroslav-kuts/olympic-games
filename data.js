@@ -42,5 +42,42 @@ var getAmountOfMedals = function (season, noc, medal, callback) {
   db.close();
 };
 
+var getTopTeams = function (season, year, medal, callback) {
+  let db = new sqlite3.Database('./olympic_history.db');
+
+  year = year ? `and g.year = ${year}` : ``;
+  medal = medal ? `= ${medal}` : ` > 0`;
+
+  let sql = `select t.noc_name NOC, count(r.medal) Amount from results r
+             join games g on (r.game_id = g.id)
+             join athletes a on (r.athlete_id = a.id)
+             join teams t on (a.team_id = t.id)
+             where g.season = ${season}
+             ${year}
+             and r.medal ${medal}
+             group by t.id
+             having Amount >
+             (select round(avg(num)) from
+               (select count(r.medal) num from results r
+                join games g on (r.game_id = g.id)
+                join athletes a on (r.athlete_id = a.id)
+                join teams t on (a.team_id = t.id)
+                where g.season = ${season}
+                ${year}
+                and r.medal ${medal}
+                group by t.id))
+             order by Amount desc;`;
+
+  db.all(sql, [], (err, rows) => {
+    if (err) {
+      throw err;
+    }
+    callback(rows);
+  });
+
+  db.close();
+};
+
 exports.getNOCs = getNOCs;
 exports.getAmountOfMedals = getAmountOfMedals;
+exports.getTopTeams = getTopTeams;
