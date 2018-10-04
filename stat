@@ -2,10 +2,10 @@
 var data = require('./data');
 var chart = require('./chart');
 
-var parseParams = function(nocNames) {
+var parseParams = function (nocNames) {
   const nocs = nocNames;
   const seasons = ['winter', 'summer'];
-  const medals = {'gold': 1, 'silver': 2, 'bronze': 3};
+  const medals = { 'gold': 1, 'silver': 2, 'bronze': 3 };
 
   var noc, season, medal, year;
 

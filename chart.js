@@ -6,9 +6,9 @@ var draw = function (data, title, columns) {
   console.log(columns.join('\t'));
 
   data.forEach(arr => {
-    var num = Math.round(arr[1]/max*200);
+    var num = Math.round(arr[1] / max * 200);
     console.log(`${arr[0]}\t${'█'.repeat(num)}`);
   });
-}
+};
 
 exports.draw = draw;

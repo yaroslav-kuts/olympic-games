@@ -1,7 +1,5 @@
 var sqlite3 = require('sqlite3');
 
-const filename = './athlete_events.csv';
-
 let db = new sqlite3.Database('./olympic_history.db', (err) => {
   if (err) {
     console.error(err.message);
@@ -11,7 +9,7 @@ let db = new sqlite3.Database('./olympic_history.db', (err) => {
 
 var removeUnofficialYearRecords = () => {
   return new Promise((resolve, reject) => {
-    db.run(`delete from temp where year = 1906;`, [], function(err) {
+    db.run(`delete from temp where year = 1906;`, [], function (err) {
       if (err) console.error(err.message);
       console.log(`Records with 1906 year were truncated!`);
       resolve();
@@ -21,7 +19,7 @@ var removeUnofficialYearRecords = () => {
 
 var cleanSports = () => {
   return new Promise((resolve, reject) => {
-    db.run(`delete from sports`, [], function(err) {
+    db.run(`delete from sports`, [], function (err) {
       if (err) console.error(err.message);
       console.log(`'Sports' table was truncated!`);
       resolve();
@@ -31,7 +29,7 @@ var cleanSports = () => {
 
 var cleanEvents = () => {
   return new Promise((resolve, reject) => {
-    db.run(`delete from events`, [], function(err) {
+    db.run(`delete from events`, [], function (err) {
       if (err) console.error(err.message);
       console.log(`'Events' table was truncated!`);
       resolve();
@@ -41,7 +39,7 @@ var cleanEvents = () => {
 
 var cleanTeams = () => {
   return new Promise((resolve, reject) => {
-    db.run(`delete from teams`, [], function(err) {
+    db.run(`delete from teams`, [], function (err) {
       if (err) console.error(err.message);
       console.log(`'Teams' table was truncated!`);
       resolve();
@@ -51,7 +49,7 @@ var cleanTeams = () => {
 
 var cleanAthletes = () => {
   return new Promise((resolve, reject) => {
-    db.run(`delete from athletes`, [], function(err) {
+    db.run(`delete from athletes`, [], function (err) {
       if (err) console.error(err.message);
       console.log(`'Athletes' table was truncated!`);
       resolve();
@@ -61,7 +59,7 @@ var cleanAthletes = () => {
 
 var cleanGames = () => {
   return new Promise((resolve, reject) => {
-    db.run(`delete from games`, [], function(err) {
+    db.run(`delete from games`, [], function (err) {
       if (err) console.error(err.message);
       console.log(`'Games' table was truncated!`);
       resolve();
@@ -71,7 +69,7 @@ var cleanGames = () => {
 
 var cleanResults = () => {
   return new Promise((resolve, reject) => {
-    db.run(`delete from results`, [], function(err) {
+    db.run(`delete from results`, [], function (err) {
       if (err) console.error(err.message);
       console.log(`'Results' table was truncated!`);
       resolve();
@@ -83,13 +81,13 @@ var fillSportsTable = () => {
   return new Promise((resolve, reject) => {
     var fillSportsSQL = `insert into sports (name) select distinct sport from temp where sport is not null`;
 
-    db.run(fillSportsSQL, [], function(err) {
-       if (err) {
-         console.log(err.message);
-         reject();
-       }
-       console.log(`'Sports' table has been fulfilled!`);
-       resolve();
+    db.run(fillSportsSQL, [], function (err) {
+      if (err) {
+        console.log(err.message);
+        reject(err.message);
+      }
+      console.log(`'Sports' table has been fulfilled!`);
+      resolve();
     });
   });
 };
@@ -98,13 +96,13 @@ var fillEventsTable = () => {
   return new Promise((resolve, reject) => {
     var fillEventsSQL = `insert into events (name) select distinct event from temp where event is not null`;
 
-    db.run(fillEventsSQL, [], function(err) {
-       if (err) {
-         console.log(err.message);
-         reject();
-       }
-       console.log(`'Events' table has been fulfilled!`);
-       resolve();
+    db.run(fillEventsSQL, [], function (err) {
+      if (err) {
+        console.log(err.message);
+        reject(err.message);
+      }
+      console.log(`'Events' table has been fulfilled!`);
+      resolve();
     });
   })
 };
@@ -113,13 +111,13 @@ var fillTeamsTable = () => {
   return new Promise((resolve, reject) => {
     var fillTeamsSQL = `insert into teams (name, noc_name) select team, NOC from temp group by NOC`;
 
-    db.run(fillTeamsSQL, [], function(err) {
-       if (err) {
-         console.log(err.message);
-         reject();
-       }
-       console.log(`'Teams' table has been fulfilled!`);
-       resolve();
+    db.run(fillTeamsSQL, [], function (err) {
+      if (err) {
+        console.log(err.message);
+        reject(err.message);
+      }
+      console.log(`'Teams' table has been fulfilled!`);
+      resolve();
     });
   });
 };
@@ -136,13 +134,13 @@ var fillGamesTable = () => {
                      end season,
                      city from temp where year is not null and year <> 1906)`;
 
-    db.run(fillGamesSQL, [], function(err) {
-       if (err) {
-         console.log(err.message);
-         reject();
-       }
-       console.log(`'Games' table has been fulfilled!`);
-       resolve();
+    db.run(fillGamesSQL, [], function (err) {
+      if (err) {
+        console.log(err.message);
+        reject(err.message);
+      }
+      console.log(`'Games' table has been fulfilled!`);
+      resolve();
     });
   });
 };
@@ -151,7 +149,7 @@ var resolveMultiCityProblem = () => {
   return new Promise((resolve, reject) => {
     var multiCityProblemSQL = `update games set city = 'Melbourne, Stockholm' where year = 1956 and season = 0`;
 
-    db.run(multiCityProblemSQL, [], function(err) {
+    db.run(multiCityProblemSQL, [], function (err) {
       if (err) {
         console.error(err.message);
       }
@@ -159,7 +157,7 @@ var resolveMultiCityProblem = () => {
 
       var removeDuplicatesSQL = `delete from games where id = (select id from games where year = 1956 and season = 0 limit 1)`;
 
-      db.run(removeDuplicatesSQL, [], function(err) {
+      db.run(removeDuplicatesSQL, [], function (err) {
         if (err) {
           console.error(err.message);
         }
@@ -188,13 +186,13 @@ var fillResulsTable = () => {
                            end medal
                          from temp`;
 
-    db.run(fillResulsSQL, [], function(err) {
-       if (err) {
-         console.log(err.message);
-         reject();
-       }
-       console.log(`'Results' table has been fullfilled!`);
-       resolve();
+    db.run(fillResulsSQL, [], function (err) {
+      if (err) {
+        console.log(err.message);
+        reject(err.message);
+      }
+      console.log(`'Results' table has been fullfilled!`);
+      resolve();
     });
   });
 };
@@ -214,7 +212,7 @@ var prettifyName = () => {
         var prettyName = row.full_name.replace(/(\(.*?\)|\".*?\"|\")( )?/g, '').trim();
         var adjustNameSQL = `update athletes set full_name = "${prettyName}" where id = ${row.id}`;
 
-        db.run(adjustNameSQL, [], function(err) {
+        db.run(adjustNameSQL, [], function (err) {
           if (err) {
             console.log(adjustNameSQL);
             console.error(err.message);
@@ -237,43 +235,43 @@ var fillAthletesTable = () => {
                         end h, t.id
                         from temp join teams t on (temp.NOC = t.noc_name) group by temp.name`;
 
-    db.run(fillAthletesSQL, [], function(err) {
-       if (err) {
-         console.log(err.message);
-         reject();
-       }
-       console.log(`'Athletes' table has been fulfilled!`);
-       resolve();
+    db.run(fillAthletesSQL, [], function (err) {
+      if (err) {
+        console.log(err.message);
+        reject(err.message);
+      }
+      console.log(`'Athletes' table has been fulfilled!`);
+      resolve();
     });
   });
 };
 
 var removeTemp = () => {
   return new Promise((resolve, reject) => {
-    db.run(`drop table temp`, [], function(err) {
-       if (err) console.log(err.message);
-       console.log(`'Temp' table was removed!`);
-       resolve();
+    db.run(`drop table temp`, [], function (err) {
+      if (err) console.log(err.message);
+      console.log(`'Temp' table was removed!`);
+      resolve();
     });
   });
 };
 
 removeUnofficialYearRecords()
- .then(() => { return cleanResults(); })
- .then(() => { return cleanGames(); })
- .then(() => { return cleanAthletes(); })
- .then(() => { return cleanTeams(); })
- .then(() => { return cleanEvents(); })
- .then(() => { return cleanSports(); })
- .then(() => { return fillSportsTable(); })
- .then(() => { return fillEventsTable(); })
- .then(() => { return fillTeamsTable(); })
- .then(() => { return fillAthletesTable(); })
- .then(() => { return fillGamesTable(); })
- .then(() => { return resolveMultiCityProblem(); })
- .then(() => { return fillResulsTable(); })
- .then(() => { return removeTemp(); })
- .then(() => { return prettifyName(); })
- .then(() => { console.log('Data was loaded to DB!')});
+  .then(() => { return cleanResults(); })
+  .then(() => { return cleanGames(); })
+  .then(() => { return cleanAthletes(); })
+  .then(() => { return cleanTeams(); })
+  .then(() => { return cleanEvents(); })
+  .then(() => { return cleanSports(); })
+  .then(() => { return fillSportsTable(); })
+  .then(() => { return fillEventsTable(); })
+  .then(() => { return fillTeamsTable(); })
+  .then(() => { return fillAthletesTable(); })
+  .then(() => { return fillGamesTable(); })
+  .then(() => { return resolveMultiCityProblem(); })
+  .then(() => { return fillResulsTable(); })
+  .then(() => { return removeTemp(); })
+  .then(() => { return prettifyName(); })
+  .then(() => { console.log('Data was loaded to DB!'); });
 
 db.close();
