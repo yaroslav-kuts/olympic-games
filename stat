@@ -2,8 +2,8 @@
 var data = require('./data');
 var chart = require('./chart');
 
-var parseParams = function(arr) {
-  const nocs = arr;
+var parseParams = function(nocNames) {
+  const nocs = nocNames;
   const seasons = ['winter', 'summer'];
   const medals = {'gold': 1, 'silver': 2, 'bronze': 3};
 
@@ -19,21 +19,22 @@ var parseParams = function(arr) {
     else throw new Error(`Unrecognisable param: ${arg}`);
   }
 
-  console.log(`${noc} ${season} ${medal} ${year}`);
-
   if (!season) throw new Error('You have to specify season param!');
 
+  season = season === 'winter' ? 1 : 0;
+  medal = medal || 0;
+
   if (noc) {
-    //draw amound of medals
-    season = season === 'winter' ? 1 : 0;
-    medal = medal || 0;
     data.getAmountOfMedals(season, noc, medal, (rows) => {
       rows = rows.map(row => [row.Year, row.Amount || 0]);
       chart.draw(rows);
     });
+  } else {
+    data.getTopTeams(season, year, medal, (rows) => {
+      rows = rows.map(row => [row.NOC, row.Amount || 0]);
+      chart.draw(rows);
+    });
   }
-
-  //draw top teams
 };
 
 data.getNOCs(parseParams);
