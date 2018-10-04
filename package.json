@@ -1,0 +1,23 @@
+{
+  "name": "olympic_games",
+  "version": "1.0.0",
+  "description": "",
+  "main": "stat",
+  "scripts": {
+    "test": "mocha",
+    "start": "sqlite3 olympic_history.db \".mode csv\"; sqlite3 olympic_history.db -separator ',' \".import ./athlete_events.csv temp\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/zzzonked/olympic_games.git"
+  },
+  "author": "Yaroslav Kuts",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/zzzonked/olympic_games/issues"
+  },
+  "homepage": "https://github.com/zzzonked/olympic_games#readme",
+  "dependencies": {
+    "sqlite3": "^4.0.2"
+  }
+}
