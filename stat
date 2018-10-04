@@ -1,25 +1,30 @@
 #!/usr/bin/env node
+var data = require('./data');
 
-const nocs = ['UKR', 'DEN', 'USA'];
-const seasons = ['winter', 'summer'];
-const medals = ['gold', 'silver', 'bronze'];
+var parseParams = function(arr) {
+  const nocs = arr;
+  const seasons = ['winter', 'summer'];
+  const medals = ['gold', 'silver', 'bronze'];
 
-var noc, season, medal, year;
+  var noc, season, medal, year;
 
-for (let i = 2; i < process.argv.length; i++) {
-  let arg = process.argv[i];
+  for (let i = 2; i < process.argv.length; i++) {
+    let arg = process.argv[i];
 
-  if (seasons.includes(arg.toLowerCase())) season = arg;
-  else if (medals.includes(arg.toLowerCase())) medal = arg;
-  else if (/^(18|19|20)[0-9]{2}$/.test(arg)) year = arg;
-  else if (nocs.includes(arg.toUpperCase())) noc = arg;
-  else throw new Error(`Unrecognisable param: ${arg}`);
-}
+    if (seasons.includes(arg.toLowerCase())) season = arg;
+    else if (medals.includes(arg.toLowerCase())) medal = arg;
+    else if (/^(18|19|20)[0-9]{2}$/.test(arg)) year = arg;
+    else if (nocs.some(noc => noc.noc_name === arg.toUpperCase())) noc = arg.toUpperCase();
+    else throw new Error(`Unrecognisable param: ${arg}`);
+  }
 
-console.log(`${noc} ${season} ${medal} ${year}`);
+  console.log(`${noc} ${season} ${medal} ${year}`);
 
-if (!season) throw new Error('You have to specify season param!');
+  if (!season) throw new Error('You have to specify season param!');
 
-if (noc) //draw amound of medals;
+  //if (noc) {//draw amound of medals}
 
-//draw top teams
+  //draw top teams
+};
+
+data.getNOCs(parseParams);
