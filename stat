@@ -26,12 +26,10 @@ var parseParams = function(nocNames) {
 
   if (noc) {
     data.getAmountOfMedals(season, noc, medal, (rows) => {
-      rows = rows.map(row => [row.Year, row.Amount || 0]);
       chart.draw(rows, 'medals', ['Year', 'Amount']);
     });
   } else {
     data.getTopTeams(season, year, medal, (rows) => {
-      rows = rows.map(row => [row.NOC, row.Amount || 0]);
       chart.draw(rows, 'top-teams', ['NOC', 'Amount']);
     });
   }

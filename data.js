@@ -36,6 +36,7 @@ var getAmountOfMedals = function (season, noc, medal, callback) {
     if (err) {
       throw err;
     }
+    rows = rows.map(row => [row.Year, row.Amount || 0]);
     callback(rows);
   });
 
@@ -72,6 +73,7 @@ var getTopTeams = function (season, year, medal, callback) {
     if (err) {
       throw err;
     }
+    rows = rows.map(row => [row.NOC, row.Amount || 0]);
     callback(rows);
   });
 
