@@ -2,7 +2,7 @@ var draw = function (data, title, columns) {
 
   var max = Math.max(...data.map(arr => arr[1]));
 
-  console.log('\n' + title.toUpperCase() + '\n');
+  console.log(`\n${title.toUpperCase()}\n`);
   console.log(columns.join('\t'));
 
   data.forEach(arr => {

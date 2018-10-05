@@ -22,7 +22,7 @@ var showChart = function (args) {
         year = arg;
       }
       else if (nocs.some(noc => noc.noc_name === arg.toUpperCase())) {
-         noc = arg.toUpperCase();
+        noc = arg.toUpperCase();
       }
       else throw new Error(`Unrecognisable param: ${arg}`);
     });
