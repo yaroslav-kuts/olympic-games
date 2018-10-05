@@ -4,7 +4,6 @@
   "description": "",
   "main": "stat",
   "scripts": {
-    "test": "mocha",
     "start": "sqlite3 olympic_history.db \".mode csv\"; sqlite3 olympic_history.db -separator ',' \".import ./athlete_events.csv temp\"; node loader.js"
   },
   "repository": {
