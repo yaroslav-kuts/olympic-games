@@ -2,37 +2,45 @@
 var data = require('./data');
 var chart = require('./chart');
 
-var parseParams = function (nocNames) {
-  const nocs = nocNames;
-  const seasons = ['winter', 'summer'];
-  const medals = { 'gold': 1, 'silver': 2, 'bronze': 3 };
+var showChart = function (args) {
+  data.getNOCs((nocNames) => {
 
-  var noc, season, medal, year;
+    const nocs = nocNames;
+    const seasons = { 'winter': 1, 'summer': 0 };
+    const medals = { 'gold': 1, 'silver': 2, 'bronze': 3 };
 
-  for (let i = 2; i < process.argv.length; i++) {
-    let arg = process.argv[i];
+    var noc, season, medal, year;
 
-    if (seasons.includes(arg.toLowerCase())) season = arg.toLowerCase();
-    else if (medals.hasOwnProperty(arg.toLowerCase())) medal = medals[arg.toLowerCase()];
-    else if (/^(18|19|20)[0-9]{2}$/.test(arg)) year = arg;
-    else if (nocs.some(noc => noc.noc_name === arg.toUpperCase())) noc = arg.toUpperCase();
-    else throw new Error(`Unrecognisable param: ${arg}`);
-  }
-
-  if (!season) throw new Error('You have to specify season param!');
-
-  season = season === 'winter' ? 1 : 0;
-  medal = medal || 0;
-
-  if (noc) {
-    data.getAmountOfMedals(season, noc, medal, (rows) => {
-      chart.draw(rows, 'medals', ['Year', 'Amount']);
+    args.forEach(arg => {
+      if (seasons.hasOwnProperty(arg.toLowerCase())) {
+        season = seasons[arg.toLowerCase()];
+      }
+      else if (medals.hasOwnProperty(arg.toLowerCase())) {
+        medal = medals[arg.toLowerCase()] || 0;
+      }
+      else if (/^(18|19|20)[0-9]{2}$/.test(arg)) {
+        year = arg;
+      }
+      else if (nocs.some(noc => noc.noc_name === arg.toUpperCase())) {
+         noc = arg.toUpperCase();
+      }
+      else throw new Error(`Unrecognisable param: ${arg}`);
     });
-  } else {
-    data.getTopTeams(season, year, medal, (rows) => {
-      chart.draw(rows, 'top-teams', ['NOC', 'Amount']);
-    });
-  }
+
+    if (season === undefined) throw new Error('You have to specify season param!');
+
+    if (noc) {
+      data.getAmountOfMedals(season, noc, medal, (rows) => {
+        chart.draw(rows, 'medals', ['Year', 'Amount']);
+      });
+    } else {
+      data.getTopTeams(season, year, medal, (rows) => {
+        chart.draw(rows, 'top-teams', ['NOC', 'Amount']);
+      });
+    }
+  });
 };
 
-data.getNOCs(parseParams);
+if (!module.parent) showChart(process.argv.slice(2));
+
+exports.showChart = showChart;
