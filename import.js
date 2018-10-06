@@ -24,9 +24,6 @@ let db = new sqlite3.Database('./data/olympic_history.db', (err) => {
   console.log('Connected to the "olympic_history" database.');
 });
 
-
-var castSeasonToEnum = promisifyQuery(queries.seasonToEnumQuery, [], `Season column of temp table casted to enum!`);
-
 var dropIndexes = () => {
   return new Promise((resolve, reject) => {
     db.run(queries.dropGamesIndex);
@@ -37,167 +34,37 @@ var dropIndexes = () => {
   });
 };
 
-var createGamesIndex = promisifyQuery(queries.createGamesIndexQuery, [], `Index in games table was created!`);
+var castSeasonToEnum = promisifyQuery(queries.seasonToEnumQuery, [], `Season column of temp table casted to enum!`);
 
-// var createEventsIndex = () => {
-//   return new Promise((resolve, reject) => {
-//     db.run(queries.createEventsIndexQuery, [], function (err) {
-//       if (err) console.error(err.message);
-//       console.log(`Index in games table was created!`);
-//       resolve();
-//     });
-//   });
-// };
+var createGamesIndex = promisifyQuery(queries.createGamesIndexQuery, [], `Index in games table was created!`);
 
 var createEventsIndex = promisifyQuery(queries.createEventsIndexQuery, [], `Index in games table was created!`);
 
-// var createSportsIndex = () => {
-//   return new Promise((resolve, reject) => {
-//     db.run(queries.createSportsIndexQuery, [], function (err) {
-//       if (err) console.error(err.message);
-//       console.log(`Index in sports table was created!`);
-//       resolve();
-//     });
-//   });
-// };
-
 var createSportsIndex = promisifyQuery(queries.createSportsIndexQuery, [], `Index in sports table was created!`);
-
-// var createAthletesIndex = () => {
-//   return new Promise((resolve, reject) => {
-//     db.run(queries.createAthletesIndexQuery, [], function (err) {
-//       if (err) console.error(err.message);
-//       console.log(`Index in athletes table was created!`);
-//       resolve();
-//     });
-//   });
-// };
 
 var createAthletesIndex = promisifyQuery(queries.createAthletesIndexQuery, [], `Index in athletes table was created!`);
 
-// var removeUnofficialYearRecords = () => {
-//   return new Promise((resolve, reject) => {
-//     db.run(queries.removeUnofficialYearRecordsQuery, [], function (err) {
-//       if (err) console.error(err.message);
-//       console.log(`Records with 1906 year were truncated!`);
-//       resolve();
-//     });
-//   });
-// };
-
 var removeUnofficialYearRecords = promisifyQuery(queries.removeUnofficialYearRecordsQuery, [], `Records with 1906 year were truncated!`);
 
-var cleanSports = () => {
-  return new Promise((resolve, reject) => {
-    db.run(queries.cleanSportsTable, [], function (err) {
-      if (err) console.error(err.message);
-      console.log(`'Sports' table was truncated!`);
-      resolve();
-    });
-  });
-};
+var cleanSports = promisifyQuery(queries.cleanSportsTable, [], `'Sports' table was truncated!`);
 
-var cleanEvents = () => {
-  return new Promise((resolve, reject) => {
-    db.run(`delete from events`, [], function (err) {
-      if (err) console.error(err.message);
-      console.log(`'Events' table was truncated!`);
-      resolve();
-    });
-  });
-};
+var cleanEvents = promisifyQuery(`delete from events`, [], `'Events' table was truncated!`);
 
-var cleanTeams = () => {
-  return new Promise((resolve, reject) => {
-    db.run(`delete from teams`, [], function (err) {
-      if (err) console.error(err.message);
-      console.log(`'Teams' table was truncated!`);
-      resolve();
-    });
-  });
-};
+var cleanTeams = promisifyQuery(`delete from teams`, [], `'Teams' table was truncated!`);
 
-var cleanAthletes = () => {
-  return new Promise((resolve, reject) => {
-    db.run(`delete from athletes`, [], function (err) {
-      if (err) console.error(err.message);
-      console.log(`'Athletes' table was truncated!`);
-      resolve();
-    });
-  });
-};
+var cleanAthletes = promisifyQuery(`delete from athletes`, [], `'Athletes' table was truncated!`);
 
-var cleanGames = () => {
-  return new Promise((resolve, reject) => {
-    db.run(`delete from games`, [], function (err) {
-      if (err) console.error(err.message);
-      console.log(`'Games' table was truncated!`);
-      resolve();
-    });
-  });
-};
+var cleanGames = promisifyQuery(`delete from games`, [], `'Games' table was truncated!`);
 
-var cleanResults = () => {
-  return new Promise((resolve, reject) => {
-    db.run(`delete from results`, [], function (err) {
-      if (err) console.error(err.message);
-      console.log(`'Results' table was truncated!`);
-      resolve();
-    });
-  });
-};
+var cleanResults = promisifyQuery(`delete from results`, [], `'Results' table was truncated!`);
 
-var fillSportsTable = () => {
-  return new Promise((resolve, reject) => {
-    db.run(queries.fillSportsQuery, [], function (err) {
-      if (err) {
-        console.log(err.message);
-        reject(err.message);
-      }
-      console.log(`'Sports' table has been fulfilled!`);
-      resolve();
-    });
-  });
-};
+var fillSportsTable = promisifyQuery(queries.fillSportsQuery, [], `'Sports' table has been fulfilled!`);
 
-var fillEventsTable = () => {
-  return new Promise((resolve, reject) => {
-    db.run(queries.fillEventsQuery, [], function (err) {
-      if (err) {
-        console.log(err.message);
-        reject(err.message);
-      }
-      console.log(`'Events' table has been fulfilled!`);
-      resolve();
-    });
-  })
-};
+var fillEventsTable = promisifyQuery(queries.fillEventsQuery, [], `'Events' table has been fulfilled!`);
 
-var fillTeamsTable = () => {
-  return new Promise((resolve, reject) => {
-    db.run(queries.fillTeamsQuery, [], function (err) {
-      if (err) {
-        console.log(err.message);
-        reject(err.message);
-      }
-      console.log(`'Teams' table has been fulfilled!`);
-      resolve();
-    });
-  });
-};
+var fillTeamsTable = promisifyQuery(queries.fillTeamsQuery, [], `'Teams' table has been fulfilled!`);
 
-var fillGamesTable = () => {
-  return new Promise((resolve, reject) => {
-    db.run(queries.fillGamesQuery, [], function (err) {
-      if (err) {
-        console.log(err.message);
-        reject(err.message);
-      }
-      console.log(`'Games' table has been fulfilled!`);
-      resolve();
-    });
-  });
-};
+var fillGamesTable = promisifyQuery(queries.fillGamesQuery, [], `'Games' table has been fulfilled!`);
 
 var resolveMultiCityProblem = () => {
   return new Promise((resolve, reject) => {
@@ -219,18 +86,7 @@ var resolveMultiCityProblem = () => {
   });
 };
 
-var fillResulsTable = () => {
-  return new Promise((resolve, reject) => {
-    db.run(queries.fillResulsQuery, [], function (err) {
-      if (err) {
-        console.log(err.message);
-        reject(err.message);
-      }
-      console.log(`'Results' table has been fullfilled!`);
-      resolve();
-    });
-  });
-};
+var fillResulsTable = promisifyQuery(queries.fillResulsQuery, [], `'Results' table has been fullfilled!`);
 
 var prettifyName = () => {
   return new Promise((resolve, reject) => {
@@ -252,28 +108,9 @@ var prettifyName = () => {
   });
 };
 
-var fillAthletesTable = () => {
-  return new Promise((resolve, reject) => {
-    db.run(queries.fillAthletesQuery, [], function (err) {
-      if (err) {
-        console.log(err.message);
-        reject(err.message);
-      }
-      console.log(`'Athletes' table has been fulfilled!`);
-      resolve();
-    });
-  });
-};
+var fillAthletesTable = promisifyQuery(queries.fillAthletesQuery, [], `'Athletes' table has been fulfilled!`);
 
-var removeTemp = () => {
-  return new Promise((resolve, reject) => {
-    db.run(`drop table temp`, [], function (err) {
-      if (err) console.log(err.message);
-      console.log(`'Temp' table was removed!`);
-      resolve();
-    });
-  });
-};
+var removeTemp = promisifyQuery(`drop table temp`, [], `'Temp' table was removed!`);
 
 removeUnofficialYearRecords()
   .then(() => { return cleanResults(); })
@@ -297,6 +134,6 @@ removeUnofficialYearRecords()
   .then(() => { return dropIndexes(); })
   .then(() => { return removeTemp(); })
   // .then(() => { return prettifyName(); })
-  .then(() => { console.log('Data was loaded to DB!'); });
+  .then(() => { console.log('Data was imported to DB!'); });
 
 db.close();
