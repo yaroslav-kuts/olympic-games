@@ -1,4 +1,5 @@
 var sqlite3 = require('sqlite3');
+var queries = require('./libs/queries');
 
 let db = new sqlite3.Database('./data/olympic_history.db', (err) => {
   if (err) {
@@ -9,7 +10,7 @@ let db = new sqlite3.Database('./data/olympic_history.db', (err) => {
 
 var castSeasonToEnum = () => {
   return new Promise((resolve, reject) => {
-    db.run(`update temp set season = case when season = 'Summer' then 0 else 1 end`, [], function (err) {
+    db.run(queries.seasonToEnumQuery, [], function (err) {
       if (err) console.error(err.message);
       console.log(`Season column of temp table casted to enum!`);
       resolve();
@@ -19,17 +20,17 @@ var castSeasonToEnum = () => {
 
 var dropIndexes = () => {
   return new Promise((resolve, reject) => {
-    db.run(`drop index g_names`);
-    db.run(`drop index s_names`);
-    db.run(`drop index e_names`);
-    db.run(`drop index a_names`);
+    db.run(queries.dropGamesIndex);
+    db.run(queries.dropSportsIndex);
+    db.run(queries.dropEventsIndex);
+    db.run(queries.dropAthletesIndex);
     resolve();
   });
 };
 
 var createGamesIndex = () => {
   return new Promise((resolve, reject) => {
-    db.run(`CREATE UNIQUE INDEX g_names ON games(year, season)`, [], function (err) {
+    db.run(queries.createGamesIndexQuery, [], function (err) {
       if (err) console.error(err.message);
       console.log(`Index in games table was created!`);
       resolve();
@@ -39,9 +40,9 @@ var createGamesIndex = () => {
 
 var createEventsIndex = () => {
   return new Promise((resolve, reject) => {
-    db.run(`CREATE UNIQUE INDEX e_names ON events(name)`, [], function (err) {
+    db.run(queries.createEventsIndexQuery, [], function (err) {
       if (err) console.error(err.message);
-      console.log(`Index in events table was created!`);
+      console.log(`Index in games table was created!`);
       resolve();
     });
   });
@@ -49,7 +50,7 @@ var createEventsIndex = () => {
 
 var createSportsIndex = () => {
   return new Promise((resolve, reject) => {
-    db.run(`CREATE UNIQUE INDEX s_names ON sports(name)`, [], function (err) {
+    db.run(queries.createSportsIndexQuery, [], function (err) {
       if (err) console.error(err.message);
       console.log(`Index in sports table was created!`);
       resolve();
@@ -59,7 +60,7 @@ var createSportsIndex = () => {
 
 var createAthletesIndex = () => {
   return new Promise((resolve, reject) => {
-    db.run(`CREATE INDEX a_names ON athletes(full_name)`, [], function (err) {
+    db.run(queries.createAthletesIndexQuery, [], function (err) {
       if (err) console.error(err.message);
       console.log(`Index in athletes table was created!`);
       resolve();
@@ -69,7 +70,7 @@ var createAthletesIndex = () => {
 
 var removeUnofficialYearRecords = () => {
   return new Promise((resolve, reject) => {
-    db.run(`delete from temp where year = 1906;`, [], function (err) {
+    db.run(queries.removeUnofficialYearRecordsQuery, [], function (err) {
       if (err) console.error(err.message);
       console.log(`Records with 1906 year were truncated!`);
       resolve();
@@ -79,7 +80,7 @@ var removeUnofficialYearRecords = () => {
 
 var cleanSports = () => {
   return new Promise((resolve, reject) => {
-    db.run(`delete from sports`, [], function (err) {
+    db.run(queries.cleanSportsTable, [], function (err) {
       if (err) console.error(err.message);
       console.log(`'Sports' table was truncated!`);
       resolve();
@@ -139,9 +140,7 @@ var cleanResults = () => {
 
 var fillSportsTable = () => {
   return new Promise((resolve, reject) => {
-    var fillSportsSQL = `insert into sports (name) select distinct sport from temp where sport is not null`;
-
-    db.run(fillSportsSQL, [], function (err) {
+    db.run(queries.fillSportsQuery, [], function (err) {
       if (err) {
         console.log(err.message);
         reject(err.message);
@@ -154,9 +153,7 @@ var fillSportsTable = () => {
 
 var fillEventsTable = () => {
   return new Promise((resolve, reject) => {
-    var fillEventsSQL = `insert into events (name) select distinct event from temp where event is not null`;
-
-    db.run(fillEventsSQL, [], function (err) {
+    db.run(queries.fillEventsQuery, [], function (err) {
       if (err) {
         console.log(err.message);
         reject(err.message);
@@ -169,9 +166,7 @@ var fillEventsTable = () => {
 
 var fillTeamsTable = () => {
   return new Promise((resolve, reject) => {
-    var fillTeamsSQL = `insert into teams (name, noc_name) select team, NOC from temp group by NOC`;
-
-    db.run(fillTeamsSQL, [], function (err) {
+    db.run(queries.fillTeamsQuery, [], function (err) {
       if (err) {
         console.log(err.message);
         reject(err.message);
@@ -184,17 +179,7 @@ var fillTeamsTable = () => {
 
 var fillGamesTable = () => {
   return new Promise((resolve, reject) => {
-    var fillGamesSQL = `insert into games (year, season, city)
-                     select year, season, city from
-                     (select distinct games, year,
-                     case season
-                       when 'Summer' then 0
-                       when 'Winter' then 1
-                       else NULL
-                     end season,
-                     city from temp where year is not null and year <> 1906)`;
-
-    db.run(fillGamesSQL, [], function (err) {
+    db.run(queries.fillGamesQuery, [], function (err) {
       if (err) {
         console.log(err.message);
         reject(err.message);
@@ -207,17 +192,13 @@ var fillGamesTable = () => {
 
 var resolveMultiCityProblem = () => {
   return new Promise((resolve, reject) => {
-    var multiCityProblemSQL = `update games set city = 'Melbourne, Stockholm' where year = 1956 and season = 0`;
 
-    db.run(multiCityProblemSQL, [], function (err) {
+    db.run(queries.multiCityProblemQuery, [], function (err) {
       if (err) {
         console.error(err.message);
       }
       console.log(`Row(s) updated: ${this.changes}`);
-
-      var removeDuplicatesSQL = `delete from games where id = (select id from games where year = 1956 and season = 0 limit 1)`;
-
-      db.run(removeDuplicatesSQL, [], function (err) {
+      db.run(queries.removeDuplicatesQuery, [], function (err) {
         if (err) {
           console.error(err.message);
         }
@@ -231,22 +212,7 @@ var resolveMultiCityProblem = () => {
 
 var fillResulsTable = () => {
   return new Promise((resolve, reject) => {
-    var fillResulsSQL = `insert into results
-                         (athlete_id, game_id, sport_id, event_id, medal)
-                         select
-                           (select id from athletes where athletes.full_name = temp.name) name,
-                           (select id from games where games.year = temp.year and games.season = temp.season) game,
-                           (select id from sports where sports.name = temp.sport) sport,
-                           (select id from events where events.name = temp.event) event,
-                           case medal
-                             when 'Gold' then 1
-                             when 'Silver' then 2
-                             when 'Bronze' then 3
-                             else 0
-                           end medal
-                         from temp`;
-
-    db.run(fillResulsSQL, [], function (err) {
+    db.run(queries.fillResulsQuery, [], function (err) {
       if (err) {
         console.log(err.message);
         reject(err.message);
@@ -259,9 +225,7 @@ var fillResulsTable = () => {
 
 var prettifyName = () => {
   return new Promise((resolve, reject) => {
-    var toAdjustSQL = `select id, full_name from athletes where full_name like '%(%)%' or full_name like '%"%"%'`;
-
-    db.each(toAdjustSQL, [], (err, row) => {
+    db.each(queries.getNamesToAdjust, [], (err, row) => {
       if (err) {
         throw err;
       }
@@ -281,17 +245,7 @@ var prettifyName = () => {
 
 var fillAthletesTable = () => {
   return new Promise((resolve, reject) => {
-    var fillAthletesSQL = `insert into athletes (full_name, age, sex, params, team_id)
-                        select distinct temp.name n, temp.sex s, temp.age a,
-                        case
-                          when temp.height <> 'NA' and temp.height is not NULL and temp.weight <> 'NA' and temp.weight is not NULL then '{ "height": "' || temp.height || '", "weight": "' || temp.weight || '" }'
-                          when temp.height <> 'NA' and temp.height is not NULL then '{ "height": "' || temp.height || '" }'
-                          when temp.weight <> 'NA' and temp.weight is not NULL then '{ "weight": "' || temp.weight || '" }'
-                          else '{ }'
-                        end h, t.id
-                        from temp join teams t on (temp.NOC = t.noc_name) group by temp.name`;
-
-    db.run(fillAthletesSQL, [], function (err) {
+    db.run(queries.fillAthletesQuery, [], function (err) {
       if (err) {
         console.log(err.message);
         reject(err.message);
@@ -325,18 +279,15 @@ removeUnofficialYearRecords()
   .then(() => { return fillAthletesTable(); })
   .then(() => { return fillGamesTable(); })
   .then(() => { return resolveMultiCityProblem(); })
-
-
   .then(() => { return createSportsIndex(); })
   .then(() => { return createEventsIndex(); })
   .then(() => { return createGamesIndex(); })
   .then(() => { return createAthletesIndex(); })
   .then(() => { return castSeasonToEnum(); })
-
   .then(() => { return fillResulsTable(); })
   .then(() => { return dropIndexes(); })
   .then(() => { return removeTemp(); })
-  .then(() => { return prettifyName(); })
+  // .then(() => { return prettifyName(); })
   .then(() => { console.log('Data was loaded to DB!'); });
 
 db.close();
