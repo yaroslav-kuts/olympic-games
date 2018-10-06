@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-var data = require('./data');
-var chart = require('./chart');
+var data = require('./libs/data');
+var chart = require('./libs/chart');
 
 var showChart = function (args) {
   data.getNOCs((nocNames) => {
