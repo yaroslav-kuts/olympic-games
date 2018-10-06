@@ -1,6 +1,22 @@
 var sqlite3 = require('sqlite3');
 var queries = require('./libs/queries');
 
+var promisifyQuery = function (query, args, message) {
+  return () => {
+    return new Promise((resolve, reject) => {
+      db.run(query, args, function (err) {
+        if (err) {
+          console.log(`'${query}' causes: ${err.message}`);
+          reject();
+        }
+        if (message) console.log(message);
+        resolve();
+      });
+    });
+  };
+};
+
+
 let db = new sqlite3.Database('./data/olympic_history.db', (err) => {
   if (err) {
     console.error(err.message);
@@ -8,15 +24,8 @@ let db = new sqlite3.Database('./data/olympic_history.db', (err) => {
   console.log('Connected to the "olympic_history" database.');
 });
 
-var castSeasonToEnum = () => {
-  return new Promise((resolve, reject) => {
-    db.run(queries.seasonToEnumQuery, [], function (err) {
-      if (err) console.error(err.message);
-      console.log(`Season column of temp table casted to enum!`);
-      resolve();
-    });
-  });
-};
+
+var castSeasonToEnum = promisifyQuery(queries.seasonToEnumQuery, [], `Season column of temp table casted to enum!`);
 
 var dropIndexes = () => {
   return new Promise((resolve, reject) => {
@@ -28,55 +37,55 @@ var dropIndexes = () => {
   });
 };
 
-var createGamesIndex = () => {
-  return new Promise((resolve, reject) => {
-    db.run(queries.createGamesIndexQuery, [], function (err) {
-      if (err) console.error(err.message);
-      console.log(`Index in games table was created!`);
-      resolve();
-    });
-  });
-};
+var createGamesIndex = promisifyQuery(queries.createGamesIndexQuery, [], `Index in games table was created!`);
 
-var createEventsIndex = () => {
-  return new Promise((resolve, reject) => {
-    db.run(queries.createEventsIndexQuery, [], function (err) {
-      if (err) console.error(err.message);
-      console.log(`Index in games table was created!`);
-      resolve();
-    });
-  });
-};
+// var createEventsIndex = () => {
+//   return new Promise((resolve, reject) => {
+//     db.run(queries.createEventsIndexQuery, [], function (err) {
+//       if (err) console.error(err.message);
+//       console.log(`Index in games table was created!`);
+//       resolve();
+//     });
+//   });
+// };
 
-var createSportsIndex = () => {
-  return new Promise((resolve, reject) => {
-    db.run(queries.createSportsIndexQuery, [], function (err) {
-      if (err) console.error(err.message);
-      console.log(`Index in sports table was created!`);
-      resolve();
-    });
-  });
-};
+var createEventsIndex = promisifyQuery(queries.createEventsIndexQuery, [], `Index in games table was created!`);
 
-var createAthletesIndex = () => {
-  return new Promise((resolve, reject) => {
-    db.run(queries.createAthletesIndexQuery, [], function (err) {
-      if (err) console.error(err.message);
-      console.log(`Index in athletes table was created!`);
-      resolve();
-    });
-  });
-};
+// var createSportsIndex = () => {
+//   return new Promise((resolve, reject) => {
+//     db.run(queries.createSportsIndexQuery, [], function (err) {
+//       if (err) console.error(err.message);
+//       console.log(`Index in sports table was created!`);
+//       resolve();
+//     });
+//   });
+// };
 
-var removeUnofficialYearRecords = () => {
-  return new Promise((resolve, reject) => {
-    db.run(queries.removeUnofficialYearRecordsQuery, [], function (err) {
-      if (err) console.error(err.message);
-      console.log(`Records with 1906 year were truncated!`);
-      resolve();
-    });
-  });
-};
+var createSportsIndex = promisifyQuery(queries.createSportsIndexQuery, [], `Index in sports table was created!`);
+
+// var createAthletesIndex = () => {
+//   return new Promise((resolve, reject) => {
+//     db.run(queries.createAthletesIndexQuery, [], function (err) {
+//       if (err) console.error(err.message);
+//       console.log(`Index in athletes table was created!`);
+//       resolve();
+//     });
+//   });
+// };
+
+var createAthletesIndex = promisifyQuery(queries.createAthletesIndexQuery, [], `Index in athletes table was created!`);
+
+// var removeUnofficialYearRecords = () => {
+//   return new Promise((resolve, reject) => {
+//     db.run(queries.removeUnofficialYearRecordsQuery, [], function (err) {
+//       if (err) console.error(err.message);
+//       console.log(`Records with 1906 year were truncated!`);
+//       resolve();
+//     });
+//   });
+// };
+
+var removeUnofficialYearRecords = promisifyQuery(queries.removeUnofficialYearRecordsQuery, [], `Records with 1906 year were truncated!`);
 
 var cleanSports = () => {
   return new Promise((resolve, reject) => {
