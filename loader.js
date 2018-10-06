@@ -261,23 +261,19 @@ var prettifyName = () => {
   return new Promise((resolve, reject) => {
     var toAdjustSQL = `select id, full_name from athletes where full_name like '%(%)%' or full_name like '%"%"%'`;
 
-    db.all(toAdjustSQL, [], (err, rows) => {
+    db.each(toAdjustSQL, [], (err, row) => {
       if (err) {
         throw err;
       }
 
-      console.log(`Names to prettify: ${rows.length}`);
+      var prettyName = row.full_name.replace(/(\(.*?\)|\".*?\"|\")( )?/g, '').trim();
+      var adjustNameSQL = `update athletes set full_name = "${prettyName}" where id = ${row.id}`;
 
-      rows.forEach((row) => {
-        var prettyName = row.full_name.replace(/(\(.*?\)|\".*?\"|\")( )?/g, '').trim();
-        var adjustNameSQL = `update athletes set full_name = "${prettyName}" where id = ${row.id}`;
-
-        db.run(adjustNameSQL, [], function (err) {
-          if (err) {
-            console.log(adjustNameSQL);
-            console.error(err.message);
-          }
-        });
+      db.run(adjustNameSQL, [], function (err) {
+        if (err) {
+          console.log(adjustNameSQL);
+          console.error(err.message);
+        }
       });
     });
   });
@@ -338,9 +334,9 @@ removeUnofficialYearRecords()
   .then(() => { return castSeasonToEnum(); })
 
   .then(() => { return fillResulsTable(); })
-  .then(() => { return removeTemp(); })
   .then(() => { return dropIndexes(); })
-  // .then(() => { return prettifyName(); })
+  .then(() => { return removeTemp(); })
+  .then(() => { return prettifyName(); })
   .then(() => { console.log('Data was loaded to DB!'); });
 
 db.close();
