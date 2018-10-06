@@ -1,6 +1,6 @@
 var sqlite3 = require('sqlite3');
 
-const DB = './olympic_history.db';
+const DB = './data/olympic_history.db';
 
 var getConnection = function () {
   return new sqlite3.Database(DB);

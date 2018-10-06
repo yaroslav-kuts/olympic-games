@@ -1,6 +1,6 @@
 var sqlite3 = require('sqlite3');
 
-let db = new sqlite3.Database('./olympic_history.db', (err) => {
+let db = new sqlite3.Database('./data/olympic_history.db', (err) => {
   if (err) {
     console.error(err.message);
   }
