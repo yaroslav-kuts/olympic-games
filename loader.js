@@ -7,6 +7,66 @@ let db = new sqlite3.Database('./data/olympic_history.db', (err) => {
   console.log('Connected to the "olympic_history" database.');
 });
 
+var castSeasonToEnum = () => {
+  return new Promise((resolve, reject) => {
+    db.run(`update temp set season = case when season = 'Summer' then 0 else 1 end`, [], function (err) {
+      if (err) console.error(err.message);
+      console.log(`Season column of temp table casted to enum!`);
+      resolve();
+    });
+  });
+};
+
+var dropIndexes = () => {
+  return new Promise((resolve, reject) => {
+    db.run(`drop index g_names`);
+    db.run(`drop index s_names`);
+    db.run(`drop index e_names`);
+    db.run(`drop index a_names`);
+    resolve();
+  });
+};
+
+var createGamesIndex = () => {
+  return new Promise((resolve, reject) => {
+    db.run(`CREATE UNIQUE INDEX g_names ON games(year, season)`, [], function (err) {
+      if (err) console.error(err.message);
+      console.log(`Index in games table was created!`);
+      resolve();
+    });
+  });
+};
+
+var createEventsIndex = () => {
+  return new Promise((resolve, reject) => {
+    db.run(`CREATE UNIQUE INDEX e_names ON events(name)`, [], function (err) {
+      if (err) console.error(err.message);
+      console.log(`Index in events table was created!`);
+      resolve();
+    });
+  });
+};
+
+var createSportsIndex = () => {
+  return new Promise((resolve, reject) => {
+    db.run(`CREATE UNIQUE INDEX s_names ON sports(name)`, [], function (err) {
+      if (err) console.error(err.message);
+      console.log(`Index in sports table was created!`);
+      resolve();
+    });
+  });
+};
+
+var createAthletesIndex = () => {
+  return new Promise((resolve, reject) => {
+    db.run(`CREATE INDEX a_names ON athletes(full_name)`, [], function (err) {
+      if (err) console.error(err.message);
+      console.log(`Index in athletes table was created!`);
+      resolve();
+    });
+  });
+};
+
 var removeUnofficialYearRecords = () => {
   return new Promise((resolve, reject) => {
     db.run(`delete from temp where year = 1906;`, [], function (err) {
@@ -175,7 +235,7 @@ var fillResulsTable = () => {
                          (athlete_id, game_id, sport_id, event_id, medal)
                          select
                            (select id from athletes where athletes.full_name = temp.name) name,
-                           (select id from games where games.year = temp.year) game,
+                           (select id from games where games.year = temp.year and games.season = temp.season) game,
                            (select id from sports where sports.name = temp.sport) sport,
                            (select id from events where events.name = temp.event) event,
                            case medal
@@ -269,9 +329,18 @@ removeUnofficialYearRecords()
   .then(() => { return fillAthletesTable(); })
   .then(() => { return fillGamesTable(); })
   .then(() => { return resolveMultiCityProblem(); })
+
+
+  .then(() => { return createSportsIndex(); })
+  .then(() => { return createEventsIndex(); })
+  .then(() => { return createGamesIndex(); })
+  .then(() => { return createAthletesIndex(); })
+  .then(() => { return castSeasonToEnum(); })
+
   .then(() => { return fillResulsTable(); })
   .then(() => { return removeTemp(); })
-  .then(() => { return prettifyName(); })
+  .then(() => { return dropIndexes(); })
+  // .then(() => { return prettifyName(); })
   .then(() => { console.log('Data was loaded to DB!'); });
 
 db.close();
