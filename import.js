@@ -1,10 +1,5 @@
-// var sqlite3 = require('sqlite3');
 var queries = require('./libs/queries');
 var data = require('./libs/data');
-
-// let db = data.getConnection();
-
-
 
 var dropGamesIndex = data.run(queries.dropGamesIndex, [], `Games index has been droped!`);
 
@@ -81,8 +76,6 @@ cleanResults()
   .then(dropEventsIndex)
   .then(dropAthletesIndex)
   .then(removeTemp)
-  // .then(data.prettifyName)
+  .then(data.prettifyName)
   .then(() => { console.log('Data was imported to DB!'); })
   .catch(() => { console.log(err.message); });
-
-// db.close();
