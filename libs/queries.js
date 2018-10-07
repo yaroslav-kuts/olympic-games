@@ -97,5 +97,46 @@ module.exports = {
                           where id = (select id from games
                                       where year = 1956
                                       and season = 0
-                                      limit 1)`
+                                      limit 1)`,
+
+  getAmountOfMedalsQuery: function (season, noc, medal) {
+    medal = medal ? `= ${medal}` : ` > 0`;
+
+    return `select year Year, res.num Amount
+            from games left outer join
+              (select g.id, count(r.medal) num from results r
+              join games g on (r.game_id = g.id)
+              join athletes a on (r.athlete_id = a.id)
+              join teams t on (a.team_id = t.id)
+              where g.season = ${season}
+              and t.noc_name = '${noc}'
+              and r.medal ${medal}
+              group by g.year) res
+            on (games.id = res.id) order by year`;
+  },
+
+  getTopTeamsQuery: function (season, year, medal) {
+    year = year ? `and g.year = ${year}` : ``;
+    medal = medal ? `= ${medal}` : ` > 0`;
+
+    return `select t.noc_name NOC, count(r.medal) Amount from results r
+               join games g on (r.game_id = g.id)
+               join athletes a on (r.athlete_id = a.id)
+               join teams t on (a.team_id = t.id)
+               where g.season = ${season}
+               ${year}
+               and r.medal ${medal}
+               group by t.id
+               having Amount >
+               (select round(avg(num)) from
+                 (select count(r.medal) num from results r
+                  join games g on (r.game_id = g.id)
+                  join athletes a on (r.athlete_id = a.id)
+                  join teams t on (a.team_id = t.id)
+                  where g.season = ${season}
+                  ${year}
+                  and r.medal ${medal}
+                  group by t.id))
+               order by Amount desc`;
+  }
 };
