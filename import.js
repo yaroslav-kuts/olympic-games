@@ -1,73 +1,60 @@
-var sqlite3 = require('sqlite3');
+// var sqlite3 = require('sqlite3');
 var queries = require('./libs/queries');
 var data = require('./libs/data');
 
-let db = data.getConnection();
+// let db = data.getConnection();
 
-var promisifyQuery = function (query, args, message) {
-  return () => {
-    return new Promise((resolve, reject) => {
-      db.run(query, args, function (err) {
-        if (err) {
-          err.message = (`Query:\n'${query}'\n caused: ${err.message}`);
-          reject(err);
-        }
-        if (message) console.log(message);
-        resolve();
-      });
-    });
-  };
-};
 
-var dropGamesIndex = promisifyQuery(queries.dropGamesIndex, [], `Games index has been droped!`);
 
-var dropSportsIndex = promisifyQuery(queries.dropSportsIndex, [], `Sports index has been droped!`);
+var dropGamesIndex = data.run(queries.dropGamesIndex, [], `Games index has been droped!`);
 
-var dropEventsIndex = promisifyQuery(queries.dropEventsIndex, [], `Events index has been droped!`);
+var dropSportsIndex = data.run(queries.dropSportsIndex, [], `Sports index has been droped!`);
 
-var dropAthletesIndex = promisifyQuery(queries.dropAthletesIndex, [], `Athletes index has been droped!`);
+var dropEventsIndex = data.run(queries.dropEventsIndex, [], `Events index has been droped!`);
 
-var castSeasonToEnum = promisifyQuery(queries.seasonToEnumQuery, [], `Season column of temp table casted to enum!`);
+var dropAthletesIndex = data.run(queries.dropAthletesIndex, [], `Athletes index has been droped!`);
 
-var createGamesIndex = promisifyQuery(queries.createGamesIndexQuery, [], `Index in games table was created!`);
+var castSeasonToEnum = data.run(queries.seasonToEnumQuery, [], `Season column of temp table casted to enum!`);
 
-var createEventsIndex = promisifyQuery(queries.createEventsIndexQuery, [], `Index in games table was created!`);
+var createGamesIndex = data.run(queries.createGamesIndexQuery, [], `Index in games table was created!`);
 
-var createSportsIndex = promisifyQuery(queries.createSportsIndexQuery, [], `Index in sports table was created!`);
+var createEventsIndex = data.run(queries.createEventsIndexQuery, [], `Index in games table was created!`);
 
-var createAthletesIndex = promisifyQuery(queries.createAthletesIndexQuery, [], `Index in athletes table was created!`);
+var createSportsIndex = data.run(queries.createSportsIndexQuery, [], `Index in sports table was created!`);
 
-var removeUnofficialYearRecords = promisifyQuery(queries.removeUnofficialYearRecordsQuery, [], `Records with 1906 year were truncated!`);
+var createAthletesIndex = data.run(queries.createAthletesIndexQuery, [], `Index in athletes table was created!`);
 
-var cleanSports = promisifyQuery(queries.cleanSportsTable, [], `'Sports' table was truncated!`);
+var removeUnofficialYearRecords = data.run(queries.removeUnofficialYearRecordsQuery, [], `Records with 1906 year were truncated!`);
 
-var cleanEvents = promisifyQuery(`delete from events`, [], `'Events' table was truncated!`);
+var cleanSports = data.run(queries.cleanSportsTable, [], `'Sports' table was truncated!`);
 
-var cleanTeams = promisifyQuery(`delete from teams`, [], `'Teams' table was truncated!`);
+var cleanEvents = data.run(`delete from events`, [], `'Events' table was truncated!`);
 
-var cleanAthletes = promisifyQuery(`delete from athletes`, [], `'Athletes' table was truncated!`);
+var cleanTeams = data.run(`delete from teams`, [], `'Teams' table was truncated!`);
 
-var cleanGames = promisifyQuery(`delete from games`, [], `'Games' table was truncated!`);
+var cleanAthletes = data.run(`delete from athletes`, [], `'Athletes' table was truncated!`);
 
-var cleanResults = promisifyQuery(`delete from results`, [], `'Results' table was truncated!`);
+var cleanGames = data.run(`delete from games`, [], `'Games' table was truncated!`);
 
-var fillSportsTable = promisifyQuery(queries.fillSportsQuery, [], `'Sports' table has been fulfilled!`);
+var cleanResults = data.run(`delete from results`, [], `'Results' table was truncated!`);
 
-var fillEventsTable = promisifyQuery(queries.fillEventsQuery, [], `'Events' table has been fulfilled!`);
+var fillSportsTable = data.run(queries.fillSportsQuery, [], `'Sports' table has been fulfilled!`);
 
-var fillTeamsTable = promisifyQuery(queries.fillTeamsQuery, [], `'Teams' table has been fulfilled!`);
+var fillEventsTable = data.run(queries.fillEventsQuery, [], `'Events' table has been fulfilled!`);
 
-var fillGamesTable = promisifyQuery(queries.fillGamesQuery, [], `'Games' table has been fulfilled!`);
+var fillTeamsTable = data.run(queries.fillTeamsQuery, [], `'Teams' table has been fulfilled!`);
 
-var resolveMultiCityProblem = promisifyQuery(queries.multiCityProblemQuery, [], `Multi city problem has been resolved!`);
+var fillGamesTable = data.run(queries.fillGamesQuery, [], `'Games' table has been fulfilled!`);
 
-var removeDuplicatesGames = promisifyQuery(queries.removeDuplicatesQuery, [], 'Duplicate games has been removed!');
+var resolveMultiCityProblem = data.run(queries.multiCityProblemQuery, [], `Multi city problem has been resolved!`);
 
-var fillResulsTable = promisifyQuery(queries.fillResulsQuery, [], `'Results' table has been fullfilled!`);
+var removeDuplicatesGames = data.run(queries.removeDuplicatesQuery, [], 'Duplicate games has been removed!');
 
-var fillAthletesTable = promisifyQuery(queries.fillAthletesQuery, [], `'Athletes' table has been fulfilled!`);
+var fillResulsTable = data.run(queries.fillResulsQuery, [], `'Results' table has been fullfilled!`);
 
-var removeTemp = promisifyQuery(`drop table temp`, [], `'Temp' table was removed!`);
+var fillAthletesTable = data.run(queries.fillAthletesQuery, [], `'Athletes' table has been fulfilled!`);
+
+var removeTemp = data.run(`drop table temp`, [], `'Temp' table was removed!`);
 
 cleanResults()
   .then(cleanGames)
@@ -94,8 +81,8 @@ cleanResults()
   .then(dropEventsIndex)
   .then(dropAthletesIndex)
   .then(removeTemp)
-  .then(data.prettifyName)
+  // .then(data.prettifyName)
   .then(() => { console.log('Data was imported to DB!'); })
   .catch(() => { console.log(err.message); });
 
-db.close();
+// db.close();

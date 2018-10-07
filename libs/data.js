@@ -113,8 +113,27 @@ var prettifyName = () => {
   db.close();
 };
 
+var run = function (query, args, message) {
+  return () => {
+    return new Promise((resolve, reject) => {
+      let db = getConnection();
+      db.run(query, args, function (err) {
+        if (err) {
+          err.message = (`Query:\n'${query}'\n caused: ${err.message}`);
+          reject(err);
+        }
+        if (message) console.log(message);
+        resolve();
+      });
+      db.close();
+    });
+  };
+};
+
 exports.getConnection = getConnection;
 exports.getNOCs = getNOCs;
 exports.getAmountOfMedals = getAmountOfMedals;
 exports.getTopTeams = getTopTeams;
 exports.prettifyName = prettifyName;
+
+exports.run = run;
