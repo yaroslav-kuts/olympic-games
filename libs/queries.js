@@ -52,7 +52,13 @@ module.exports = {
                       and year <> 1906)`,
 
   fillAthletesQuery: `insert into athletes (full_name, age, sex, params, team_id)
-                      select distinct temp.name n, temp.sex s, temp.age a,
+                      select distinct temp.name n,
+                      case
+                        when temp.sex = 'NA' then NULL
+                      end s,
+                      case
+                        when temp.age = 'NA' then NULL
+                      end a,
                       case
                         when temp.height <> 'NA' and temp.height is not NULL and temp.weight <> 'NA' and temp.weight is not NULL then '{ "height": "' || temp.height || '", "weight": "' || temp.weight || '" }'
                         when temp.height <> 'NA' and temp.height is not NULL then '{ "height": "' || temp.height || '" }'
