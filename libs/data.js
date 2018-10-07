@@ -1,10 +1,10 @@
-var sqlite3 = require('sqlite3');
-var queries = require('./queries');
+let sqlite3 = require('sqlite3');
+let queries = require('./queries');
 
 const DB = './data/olympic_history.db';
 
-var prettifyName = () => {
-  let db = getConnection();
+let prettifyName = () => {
+  let db = new sqlite3.Database(DB);;
 
   return new Promise((resolve, reject) => {
     db.each(queries.getNamesToAdjust, [], (err, row) => {
@@ -12,8 +12,8 @@ var prettifyName = () => {
         throw err;
       }
 
-      var prettyName = row.full_name.replace(/(\(.*?\)|\".*?\"|\")( )?/g, '').trim();
-      var adjustNameSQL = `update athletes set full_name = "${prettyName}" where id = ${row.id}`;
+      let prettyName = row.full_name.replace(/(\(.*?\)|\".*?\"|\")( )?/g, '').trim();
+      let adjustNameSQL = `update athletes set full_name = "${prettyName}" where id = ${row.id}`;
 
       db.run(adjustNameSQL, [], function (err) {
         if (err) {
@@ -26,7 +26,7 @@ var prettifyName = () => {
   db.close();
 };
 
-var all = function (query, args) {
+let all = function (query, args) {
   return () => {
     return new Promise((resolve, reject) => {
       let db = new sqlite3.Database(DB);
@@ -42,7 +42,7 @@ var all = function (query, args) {
   };
 };
 
-var run = function (query, args, message) {
+let run = function (query, args, message) {
   return () => {
     return new Promise((resolve, reject) => {
       let db = new sqlite3.Database(DB);
@@ -60,6 +60,5 @@ var run = function (query, args, message) {
 };
 
 exports.prettifyName = prettifyName;
-
 exports.run = run;
 exports.all = all;

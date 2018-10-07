@@ -1,55 +1,55 @@
-var queries = require('./libs/queries');
-var data = require('./libs/data');
+let queries = require('./libs/queries');
+let data = require('./libs/data');
 
-var dropGamesIndex = data.run(queries.dropGamesIndex, [], `Games index has been droped!`);
+let dropGamesIndex = data.run(queries.dropGamesIndex, [], `Games index has been droped!`);
 
-var dropSportsIndex = data.run(queries.dropSportsIndex, [], `Sports index has been droped!`);
+let dropSportsIndex = data.run(queries.dropSportsIndex, [], `Sports index has been droped!`);
 
-var dropEventsIndex = data.run(queries.dropEventsIndex, [], `Events index has been droped!`);
+let dropEventsIndex = data.run(queries.dropEventsIndex, [], `Events index has been droped!`);
 
-var dropAthletesIndex = data.run(queries.dropAthletesIndex, [], `Athletes index has been droped!`);
+let dropAthletesIndex = data.run(queries.dropAthletesIndex, [], `Athletes index has been droped!`);
 
-var castSeasonToEnum = data.run(queries.seasonToEnumQuery, [], `Season column of temp table casted to enum!`);
+let castSeasonToEnum = data.run(queries.seasonToEnumQuery, [], `Season column of temp table casted to enum!`);
 
-var createGamesIndex = data.run(queries.createGamesIndexQuery, [], `Index in games table was created!`);
+let createGamesIndex = data.run(queries.createGamesIndexQuery, [], `Index in games table was created!`);
 
-var createEventsIndex = data.run(queries.createEventsIndexQuery, [], `Index in games table was created!`);
+let createEventsIndex = data.run(queries.createEventsIndexQuery, [], `Index in games table was created!`);
 
-var createSportsIndex = data.run(queries.createSportsIndexQuery, [], `Index in sports table was created!`);
+let createSportsIndex = data.run(queries.createSportsIndexQuery, [], `Index in sports table was created!`);
 
-var createAthletesIndex = data.run(queries.createAthletesIndexQuery, [], `Index in athletes table was created!`);
+let createAthletesIndex = data.run(queries.createAthletesIndexQuery, [], `Index in athletes table was created!`);
 
-var removeUnofficialYearRecords = data.run(queries.removeUnofficialYearRecordsQuery, [], `Records with 1906 year were truncated!`);
+let removeUnofficialYearRecords = data.run(queries.removeUnofficialYearRecordsQuery, [], `Records with 1906 year were truncated!`);
 
-var cleanSports = data.run(queries.cleanSportsTable, [], `'Sports' table was truncated!`);
+let cleanSports = data.run(queries.cleanSportsTable, [], `'Sports' table was truncated!`);
 
-var cleanEvents = data.run(`delete from events`, [], `'Events' table was truncated!`);
+let cleanEvents = data.run(`delete from events`, [], `'Events' table was truncated!`);
 
-var cleanTeams = data.run(`delete from teams`, [], `'Teams' table was truncated!`);
+let cleanTeams = data.run(`delete from teams`, [], `'Teams' table was truncated!`);
 
-var cleanAthletes = data.run(`delete from athletes`, [], `'Athletes' table was truncated!`);
+let cleanAthletes = data.run(`delete from athletes`, [], `'Athletes' table was truncated!`);
 
-var cleanGames = data.run(`delete from games`, [], `'Games' table was truncated!`);
+let cleanGames = data.run(`delete from games`, [], `'Games' table was truncated!`);
 
-var cleanResults = data.run(`delete from results`, [], `'Results' table was truncated!`);
+let cleanResults = data.run(`delete from results`, [], `'Results' table was truncated!`);
 
-var fillSportsTable = data.run(queries.fillSportsQuery, [], `'Sports' table has been fulfilled!`);
+let fillSportsTable = data.run(queries.fillSportsQuery, [], `'Sports' table has been fulfilled!`);
 
-var fillEventsTable = data.run(queries.fillEventsQuery, [], `'Events' table has been fulfilled!`);
+let fillEventsTable = data.run(queries.fillEventsQuery, [], `'Events' table has been fulfilled!`);
 
-var fillTeamsTable = data.run(queries.fillTeamsQuery, [], `'Teams' table has been fulfilled!`);
+let fillTeamsTable = data.run(queries.fillTeamsQuery, [], `'Teams' table has been fulfilled!`);
 
-var fillGamesTable = data.run(queries.fillGamesQuery, [], `'Games' table has been fulfilled!`);
+let fillGamesTable = data.run(queries.fillGamesQuery, [], `'Games' table has been fulfilled!`);
 
-var resolveMultiCityProblem = data.run(queries.multiCityProblemQuery, [], `Multi city problem has been resolved!`);
+let resolveMultiCityProblem = data.run(queries.multiCityProblemQuery, [], `Multi city problem has been resolved!`);
 
-var removeDuplicatesGames = data.run(queries.removeDuplicatesQuery, [], 'Duplicate games has been removed!');
+let removeDuplicatesGames = data.run(queries.removeDuplicatesQuery, [], 'Duplicate games has been removed!');
 
-var fillResulsTable = data.run(queries.fillResulsQuery, [], `'Results' table has been fullfilled!`);
+let fillResulsTable = data.run(queries.fillResulsQuery, [], `'Results' table has been fullfilled!`);
 
-var fillAthletesTable = data.run(queries.fillAthletesQuery, [], `'Athletes' table has been fulfilled!`);
+let fillAthletesTable = data.run(queries.fillAthletesQuery, [], `'Athletes' table has been fulfilled!`);
 
-var removeTemp = data.run(`drop table temp`, [], `'Temp' table was removed!`);
+let removeTemp = data.run(`drop table temp`, [], `'Temp' table was removed!`);
 
 cleanResults()
   .then(cleanGames)
