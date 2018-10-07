@@ -7,22 +7,6 @@ var getConnection = function () {
   return new sqlite3.Database(DB);
 }
 
-var getNOCs = function (callback) {
-  // let db = new sqlite3.Database('./olympic_history.db');
-  var db = getConnection();
-
-  var sql = `select id, noc_name from teams`;
-
-  db.all(sql, [], (err, rows) => {
-    if (err) {
-      throw err;
-    }
-    callback(rows);
-  });
-
-  db.close();
-};
-
 var getAmountOfMedals = function (season, noc, medal, callback) {
   //let db = new sqlite3.Database('./olympic_history.db');
   var db = getConnection();
@@ -113,6 +97,22 @@ var prettifyName = () => {
   db.close();
 };
 
+var all = function (query, args) {
+  return () => {
+    return new Promise((resolve, reject) => {
+      let db = getConnection();
+      db.all(query, [], (err, rows) => {
+        if (err) {
+          err.message = (`Query:\n'${query}'\n caused: ${err.message}`);
+          reject(err);
+        }
+        resolve(rows);
+      });
+      db.close();
+    });
+  };
+};
+
 var run = function (query, args, message) {
   return () => {
     return new Promise((resolve, reject) => {
@@ -137,3 +137,4 @@ exports.getTopTeams = getTopTeams;
 exports.prettifyName = prettifyName;
 
 exports.run = run;
+exports.all = all;
