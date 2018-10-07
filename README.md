@@ -1,8 +1,8 @@
-Import data:
+<b>Import data:<b>
 
 npm start
 
-Usage:
+<b>Usage:<b>
 
 ./stat [winter|summer] [team] [gold|silver|bronze]
 
