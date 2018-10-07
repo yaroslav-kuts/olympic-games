@@ -1,18 +1,15 @@
 #!/usr/bin/env node
-var data = require('./libs/data');
-var chart = require('./libs/chart');
-var queries = require('./libs/queries');
+const data = require('./libs/data');
+const chart = require('./libs/chart');
+const queries = require('./libs/queries');
 
-var args = process.argv.slice(2);
+let show = async function (args) {
+  const getTeams = data.all(`select id, noc_name from teams`, []);
+  const seasons = { 'winter': 1, 'summer': 0 };
+  const medals = { 'gold': 1, 'silver': 2, 'bronze': 3 };
+  const teams = await getTeams();
 
-const seasons = { 'winter': 1, 'summer': 0 };
-const medals = { 'gold': 1, 'silver': 2, 'bronze': 3 };
-
-var teams;
-
-var showChart = function () {
-
-  var noc, season, medal, year;
+  let noc, season, medal, year;
 
   args.forEach(arg => {
     if (seasons.hasOwnProperty(arg.toLowerCase())) {
@@ -33,33 +30,18 @@ var showChart = function () {
   if (season === undefined) throw new Error('You have to specify season param!');
 
   if (noc) {
-    let getAmountOfMedals = data.all(queries.getAmountOfMedalsQuery(season, noc, medal), []);
-    getAmountOfMedals()
-      .then((rows) => {
-        rows = rows.map(row => [row.Year, row.Amount || 0]);
-        chart.draw(rows, 'medals', ['Year', 'Amount']);
-      })
-      .catch((err) => { console.log(err); });
+    const getAmountOfMedals = data.all(queries.getAmountOfMedalsQuery(season, noc, medal), []);
+    let rows = await getAmountOfMedals();
+    rows = rows.map(row => [row.Year, row.Amount || 0]);
+    chart.draw(rows, 'medals', ['Year', 'Amount']);
   } else {
-    let getTopTeams = data.all(queries.getTopTeamsQuery(season, year, medal), []);
-    getTopTeams()
-      .then((rows) => {
-        rows = rows.map(row => [row.NOC, row.Amount || 0]);
-        chart.draw(rows, 'top-teams', ['NOC', 'Amount']);
-      })
-      .catch((err) => { console.log(err); });
+    const getTopTeams = data.all(queries.getTopTeamsQuery(season, year, medal), []);
+    let rows = await getTopTeams();
+    rows = rows.map(row => [row.NOC, row.Amount || 0]);
+    chart.draw(rows, 'top-teams', ['NOC', 'Amount']);
   }
 };
 
-var main = async function () {
+if (!module.parent) show(process.argv.slice(2));
 
-  var getTeams = data.all(`select id, noc_name from teams`, []);
-
-  teams = await getTeams();
-
-  showChart();
-};
-
-if (!module.parent) main();
-
-exports.showChart = main;
+exports.show = show;
