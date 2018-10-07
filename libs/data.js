@@ -1,4 +1,5 @@
 var sqlite3 = require('sqlite3');
+var queries = require('./queries');
 
 const DB = './data/olympic_history.db';
 
@@ -89,7 +90,31 @@ var getTopTeams = function (season, year, medal, callback) {
   db.close();
 };
 
+var prettifyName = () => {
+  let db = getConnection();
+
+  return new Promise((resolve, reject) => {
+    db.each(queries.getNamesToAdjust, [], (err, row) => {
+      if (err) {
+        throw err;
+      }
+
+      var prettyName = row.full_name.replace(/(\(.*?\)|\".*?\"|\")( )?/g, '').trim();
+      var adjustNameSQL = `update athletes set full_name = "${prettyName}" where id = ${row.id}`;
+
+      db.run(adjustNameSQL, [], function (err) {
+        if (err) {
+          console.log(adjustNameSQL);
+          console.error(err.message);
+        }
+      });
+    });
+  });
+  db.close();
+};
+
 exports.getConnection = getConnection;
 exports.getNOCs = getNOCs;
 exports.getAmountOfMedals = getAmountOfMedals;
 exports.getTopTeams = getTopTeams;
+exports.prettifyName = prettifyName;

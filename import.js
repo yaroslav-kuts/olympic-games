@@ -1,12 +1,15 @@
 var sqlite3 = require('sqlite3');
 var queries = require('./libs/queries');
+var data = require('./libs/data');
+
+let db = data.getConnection();
 
 var promisifyQuery = function (query, args, message) {
   return () => {
     return new Promise((resolve, reject) => {
       db.run(query, args, function (err) {
         if (err) {
-          console.log(`'${query}' causes: ${err.message}`);
+          console.log(`Query:\n'${query}'\n caused: ${err.message}`);
           reject();
         }
         if (message) console.log(message);
@@ -16,23 +19,13 @@ var promisifyQuery = function (query, args, message) {
   };
 };
 
+var dropGamesIndex = promisifyQuery(queries.dropGamesIndex, [], `Games index has been droped!`);
 
-let db = new sqlite3.Database('./data/olympic_history.db', (err) => {
-  if (err) {
-    console.error(err.message);
-  }
-  console.log('Connected to the "olympic_history" database.');
-});
+var dropSportsIndex = promisifyQuery(queries.dropSportsIndex, [], `Sports index has been droped!`);
 
-var dropIndexes = () => {
-  return new Promise((resolve, reject) => {
-    db.run(queries.dropGamesIndex);
-    db.run(queries.dropSportsIndex);
-    db.run(queries.dropEventsIndex);
-    db.run(queries.dropAthletesIndex);
-    resolve();
-  });
-};
+var dropEventsIndex = promisifyQuery(queries.dropEventsIndex, [], `Events index has been droped!`);
+
+var dropAthletesIndex = promisifyQuery(queries.dropAthletesIndex, [], `Athletes index has been droped!`);
 
 var castSeasonToEnum = promisifyQuery(queries.seasonToEnumQuery, [], `Season column of temp table casted to enum!`);
 
@@ -66,47 +59,11 @@ var fillTeamsTable = promisifyQuery(queries.fillTeamsQuery, [], `'Teams' table h
 
 var fillGamesTable = promisifyQuery(queries.fillGamesQuery, [], `'Games' table has been fulfilled!`);
 
-var resolveMultiCityProblem = () => {
-  return new Promise((resolve, reject) => {
+var resolveMultiCityProblem = promisifyQuery(queries.multiCityProblemQuery, [], `Multi city problem has been resolved!`);
 
-    db.run(queries.multiCityProblemQuery, [], function (err) {
-      if (err) {
-        console.error(err.message);
-      }
-      console.log(`Row(s) updated: ${this.changes}`);
-      db.run(queries.removeDuplicatesQuery, [], function (err) {
-        if (err) {
-          console.error(err.message);
-        }
-        console.log(`Row(s) deleted: ${this.changes}`);
-        console.log(`Multi city problem in 'Games' table was resolved!`);
-        resolve();
-      });
-    });
-  });
-};
+var removeDuplicatesGames = promisifyQuery(queries.removeDuplicatesQuery, [], 'Duplicate games has been removed!');
 
 var fillResulsTable = promisifyQuery(queries.fillResulsQuery, [], `'Results' table has been fullfilled!`);
-
-var prettifyName = () => {
-  return new Promise((resolve, reject) => {
-    db.each(queries.getNamesToAdjust, [], (err, row) => {
-      if (err) {
-        throw err;
-      }
-
-      var prettyName = row.full_name.replace(/(\(.*?\)|\".*?\"|\")( )?/g, '').trim();
-      var adjustNameSQL = `update athletes set full_name = "${prettyName}" where id = ${row.id}`;
-
-      db.run(adjustNameSQL, [], function (err) {
-        if (err) {
-          console.log(adjustNameSQL);
-          console.error(err.message);
-        }
-      });
-    });
-  });
-};
 
 var fillAthletesTable = promisifyQuery(queries.fillAthletesQuery, [], `'Athletes' table has been fulfilled!`);
 
@@ -125,15 +82,19 @@ removeUnofficialYearRecords()
   .then(() => { return fillAthletesTable(); })
   .then(() => { return fillGamesTable(); })
   .then(() => { return resolveMultiCityProblem(); })
+  .then(() => { return removeDuplicatesGames(); })
   .then(() => { return createSportsIndex(); })
   .then(() => { return createEventsIndex(); })
   .then(() => { return createGamesIndex(); })
   .then(() => { return createAthletesIndex(); })
   .then(() => { return castSeasonToEnum(); })
   .then(() => { return fillResulsTable(); })
-  .then(() => { return dropIndexes(); })
+  .then(() => { return dropGamesIndex(); })
+  .then(() => { return dropSportsIndex(); })
+  .then(() => { return dropEventsIndex(); })
+  .then(() => { return dropAthletesIndex(); })
   .then(() => { return removeTemp(); })
-  // .then(() => { return prettifyName(); })
+  .then(() => { return data.prettifyName(); })
   .then(() => { console.log('Data was imported to DB!'); });
 
 db.close();
