@@ -3,10 +3,6 @@ var queries = require('./queries');
 
 const DB = './data/olympic_history.db';
 
-var getConnection = function () {
-  return new sqlite3.Database(DB);
-}
-
 var prettifyName = () => {
   let db = getConnection();
 
@@ -33,7 +29,7 @@ var prettifyName = () => {
 var all = function (query, args) {
   return () => {
     return new Promise((resolve, reject) => {
-      let db = getConnection();
+      let db = new sqlite3.Database(DB);
       db.all(query, [], (err, rows) => {
         if (err) {
           err.message = (`Query:\n'${query}'\n caused: ${err.message}`);
@@ -49,7 +45,7 @@ var all = function (query, args) {
 var run = function (query, args, message) {
   return () => {
     return new Promise((resolve, reject) => {
-      let db = getConnection();
+      let db = new sqlite3.Database(DB);
       db.run(query, args, function (err) {
         if (err) {
           err.message = (`Query:\n'${query}'\n caused: ${err.message}`);
@@ -62,8 +58,6 @@ var run = function (query, args, message) {
     });
   };
 };
-
-exports.getConnection = getConnection;
 
 exports.prettifyName = prettifyName;
 
