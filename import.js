@@ -9,8 +9,8 @@ var promisifyQuery = function (query, args, message) {
     return new Promise((resolve, reject) => {
       db.run(query, args, function (err) {
         if (err) {
-          console.log(`Query:\n'${query}'\n caused: ${err.message}`);
-          reject();
+          err.message = (`Query:\n'${query}'\n caused: ${err.message}`);
+          reject(err);
         }
         if (message) console.log(message);
         resolve();
@@ -70,31 +70,32 @@ var fillAthletesTable = promisifyQuery(queries.fillAthletesQuery, [], `'Athletes
 var removeTemp = promisifyQuery(`drop table temp`, [], `'Temp' table was removed!`);
 
 cleanResults()
-  .then(() => { return cleanGames(); })
-  .then(() => { return cleanAthletes(); })
-  .then(() => { return cleanTeams(); })
-  .then(() => { return cleanEvents(); })
-  .then(() => { return cleanSports(); })
-  .then(() => { return fillTeamsTable(); })
-  .then(() => { return removeUnofficialYearRecords (); })
-  .then(() => { return fillSportsTable(); })
-  .then(() => { return fillEventsTable(); })
-  .then(() => { return fillAthletesTable(); })
-  .then(() => { return fillGamesTable(); })
-  .then(() => { return resolveMultiCityProblem(); })
-  .then(() => { return removeDuplicatesGames(); })
-  .then(() => { return createSportsIndex(); })
-  .then(() => { return createEventsIndex(); })
-  .then(() => { return createGamesIndex(); })
-  .then(() => { return createAthletesIndex(); })
-  .then(() => { return castSeasonToEnum(); })
-  .then(() => { return fillResulsTable(); })
-  .then(() => { return dropGamesIndex(); })
-  .then(() => { return dropSportsIndex(); })
-  .then(() => { return dropEventsIndex(); })
-  .then(() => { return dropAthletesIndex(); })
-  .then(() => { return removeTemp(); })
-  .then(() => { return data.prettifyName(); })
-  .then(() => { console.log('Data was imported to DB!'); });
+  .then(cleanGames)
+  .then(cleanAthletes)
+  .then(cleanTeams)
+  .then(cleanEvents)
+  .then(cleanSports)
+  .then(fillTeamsTable)
+  .then(removeUnofficialYearRecords)
+  .then(fillSportsTable)
+  .then(fillEventsTable)
+  .then(fillAthletesTable)
+  .then(fillGamesTable)
+  .then(resolveMultiCityProblem)
+  .then(removeDuplicatesGames)
+  .then(createSportsIndex)
+  .then(createEventsIndex)
+  .then(createGamesIndex)
+  .then(createAthletesIndex)
+  .then(castSeasonToEnum)
+  .then(fillResulsTable)
+  .then(dropGamesIndex)
+  .then(dropSportsIndex)
+  .then(dropEventsIndex)
+  .then(dropAthletesIndex)
+  .then(removeTemp)
+  .then(data.prettifyName)
+  .then(() => { console.log('Data was imported to DB!'); })
+  .catch(() => { console.log(err.message); });
 
 db.close();
