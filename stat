@@ -48,20 +48,16 @@ var showChart = function () {
         chart.draw(rows, 'top-teams', ['NOC', 'Amount']);
       })
       .catch((err) => { console.log(err); });
-    // data.getTopTeams(season, year, medal, (rows) => {
-    //   chart.draw(rows, 'top-teams', ['NOC', 'Amount']);
-    // });
   }
 };
 
-var main = function () {
+var main = async function () {
 
   var getTeams = data.all(`select id, noc_name from teams`, []);
 
-  getTeams()
-    .then((rows) => { teams = rows; })
-    .then(() => { showChart(); })
-    .catch((err) => { console.log(err); });
+  teams = await getTeams();
+
+  showChart();
 };
 
 if (!module.parent) main();
