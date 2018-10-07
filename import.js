@@ -69,16 +69,16 @@ var fillAthletesTable = promisifyQuery(queries.fillAthletesQuery, [], `'Athletes
 
 var removeTemp = promisifyQuery(`drop table temp`, [], `'Temp' table was removed!`);
 
-removeUnofficialYearRecords()
-  .then(() => { return cleanResults(); })
+cleanResults()
   .then(() => { return cleanGames(); })
   .then(() => { return cleanAthletes(); })
   .then(() => { return cleanTeams(); })
   .then(() => { return cleanEvents(); })
   .then(() => { return cleanSports(); })
+  .then(() => { return fillTeamsTable(); })
+  .then(() => { return removeUnofficialYearRecords (); })
   .then(() => { return fillSportsTable(); })
   .then(() => { return fillEventsTable(); })
-  .then(() => { return fillTeamsTable(); })
   .then(() => { return fillAthletesTable(); })
   .then(() => { return fillGamesTable(); })
   .then(() => { return resolveMultiCityProblem(); })
