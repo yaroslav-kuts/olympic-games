@@ -51,6 +51,8 @@ const fillAthletesTable = data.run(queries.fillAthletesQuery, `'Athletes' table 
 
 const removeTemp = data.run(`drop table temp`, `'Temp' table was removed!`);
 
+const trimAthleteNames = data.run(queries.trimAthleteNamesQuery, `Athlete names were trimmed!`);
+
 cleanResults()
   .then(cleanGames)
   .then(cleanAthletes)
@@ -76,7 +78,7 @@ cleanResults()
   .then(dropEventsIndex)
   .then(dropAthletesIndex)
   .then(removeTemp)
-  .then(data.prettifyName)
+  .then(trimAthleteNames)
   .then(() => { console.log('Data was imported to DB!'); })
   .catch((err) => { console.log(err.message); });
 

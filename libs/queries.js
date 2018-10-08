@@ -99,6 +99,8 @@ module.exports = {
                                       and season = 0
                                       limit 1)`,
 
+  trimAthleteNamesQuery: `update athletes set full_name = trim(full_name)`,
+
   getAmountOfMedalsQuery: function (season, noc, medal) {
     medal = medal ? `= ${medal}` : ` > 0`;
 
