@@ -1,9 +1,11 @@
-<b>Import data:<b>
-
+#### Import data:
+```sh
 npm start
-
-<b>Usage:<b>
-
+```
+#### Usage:
+```sh
 ./stat [winter|summer] [team] [gold|silver|bronze]
-
-./stat [winter|summer] [year] [gold|silver|bronze] 
+```
+```sh
+./stat [winter|summer] [year] [gold|silver|bronze]
+```
