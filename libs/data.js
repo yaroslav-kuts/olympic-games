@@ -1,10 +1,10 @@
-let sqlite3 = require('sqlite3');
-let queries = require('./queries');
+const sqlite3 = require('sqlite3');
+const queries = require('./queries');
 
 const DB = './data/olympic_history.db';
 
-let prettifyName = () => {
-  let db = new sqlite3.Database(DB);;
+const prettifyName = () => {
+  const db = new sqlite3.Database(DB);;
 
   return new Promise((resolve, reject) => {
     db.each(queries.getNamesToAdjust, [], (err, row) => {
@@ -12,8 +12,8 @@ let prettifyName = () => {
         reject(err);
       }
 
-      let prettyName = row.full_name.replace(/(\(.*?\)|\".*?\"|\")( )?/g, '').trim();
-      let adjustNameSQL = `update athletes set full_name = "${prettyName}" where id = ${row.id}`;
+      const prettyName = row.full_name.replace(/(\(.*?\)|\".*?\"|\")( )?/g, '').trim();
+      const adjustNameSQL = `update athletes set full_name = "${prettyName}" where id = ${row.id}`;
 
       db.run(adjustNameSQL, [], function (err) {
         if (err) {
@@ -27,10 +27,10 @@ let prettifyName = () => {
   db.close();
 };
 
-let all = function (query) {
+const all = function (query) {
   return () => {
     return new Promise((resolve, reject) => {
-      let db = new sqlite3.Database(DB);
+      const db = new sqlite3.Database(DB);
       db.all(query, [], (err, rows) => {
         if (err) {
           err.message = (`Query:\n'${query}'\n caused: ${err.message}`);
@@ -43,10 +43,10 @@ let all = function (query) {
   };
 };
 
-let run = function (query, message) {
+const run = function (query, message) {
   return () => {
     return new Promise((resolve, reject) => {
-      let db = new sqlite3.Database(DB);
+      const db = new sqlite3.Database(DB);
       db.run(query, [], function (err) {
         if (err) {
           err.message = (`Query:\n'${query}'\n caused: ${err.message}`);

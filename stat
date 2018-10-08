@@ -3,7 +3,7 @@ const data = require('./libs/data');
 const chart = require('./libs/chart');
 const queries = require('./libs/queries');
 
-let show = async function (args) {
+const show = async function (args) {
   const getTeams = data.all(`select id, noc_name from teams`);
   const seasons = { 'winter': 1, 'summer': 0 };
   const medals = { 'gold': 1, 'silver': 2, 'bronze': 3 };
