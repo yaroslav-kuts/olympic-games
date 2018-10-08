@@ -80,6 +80,8 @@ cleanResults()
   .then(removeTemp)
   .then(trimAthleteNames)
   .then(() => { console.log('Data was imported to DB!'); })
-  .catch((err) => { console.log(err.message); });
+  .catch((err) => {
+    removeTemp().then(() => { console.log(err.message); })
+   });
 
 data.close();
