@@ -4,7 +4,7 @@ const chart = require('./libs/chart');
 const queries = require('./libs/queries');
 
 let show = async function (args) {
-  const getTeams = data.all(`select id, noc_name from teams`, []);
+  const getTeams = data.all(`select id, noc_name from teams`);
   const seasons = { 'winter': 1, 'summer': 0 };
   const medals = { 'gold': 1, 'silver': 2, 'bronze': 3 };
   const teams = await getTeams();
@@ -30,12 +30,12 @@ let show = async function (args) {
   if (season === undefined) throw new Error('You have to specify season param!');
 
   if (noc) {
-    const getAmountOfMedals = data.all(queries.getAmountOfMedalsQuery(season, noc, medal), []);
+    const getAmountOfMedals = data.all(queries.getAmountOfMedalsQuery(season, noc, medal));
     let rows = await getAmountOfMedals();
     rows = rows.map(row => [row.Year, row.Amount || 0]);
     chart.draw(rows, 'medals', ['Year', 'Amount']);
   } else {
-    const getTopTeams = data.all(queries.getTopTeamsQuery(season, year, medal), []);
+    const getTopTeams = data.all(queries.getTopTeamsQuery(season, year, medal));
     let rows = await getTopTeams();
     rows = rows.map(row => [row.NOC, row.Amount || 0]);
     chart.draw(rows, 'top-teams', ['NOC', 'Amount']);

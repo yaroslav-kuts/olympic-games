@@ -9,7 +9,7 @@ let prettifyName = () => {
   return new Promise((resolve, reject) => {
     db.each(queries.getNamesToAdjust, [], (err, row) => {
       if (err) {
-        throw err;
+        reject(err);
       }
 
       let prettyName = row.full_name.replace(/(\(.*?\)|\".*?\"|\")( )?/g, '').trim();
@@ -20,13 +20,14 @@ let prettifyName = () => {
           console.log(adjustNameSQL);
           console.error(err.message);
         }
+        resolve();
       });
     });
   });
   db.close();
 };
 
-let all = function (query, args) {
+let all = function (query) {
   return () => {
     return new Promise((resolve, reject) => {
       let db = new sqlite3.Database(DB);
@@ -42,11 +43,11 @@ let all = function (query, args) {
   };
 };
 
-let run = function (query, args, message) {
+let run = function (query, message) {
   return () => {
     return new Promise((resolve, reject) => {
       let db = new sqlite3.Database(DB);
-      db.run(query, args, function (err) {
+      db.run(query, [], function (err) {
         if (err) {
           err.message = (`Query:\n'${query}'\n caused: ${err.message}`);
           reject(err);
