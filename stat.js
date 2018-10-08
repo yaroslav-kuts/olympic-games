@@ -30,13 +30,13 @@ const show = async function (args) {
   if (team) {
     const getAmountPromise = db.all(queries.getAmountOfMedalsQuery(season, team, medal));
     let rows = await getAmountPromise();
-    rows = rows.map(row => [row.Year, row.Amount || 0]);
+    rows = rows.map(row => [row.year, row.amount || 0]);
     chart.draw(rows, 'medals', ['Year', 'Amount']);
   }
   else {
     const getTopPromise = db.all(queries.getTopTeamsQuery(season, year, medal));
     let rows = await getTopPromise();
-    rows = rows.map(row => [row.NOC, row.Amount || 0]);
+    rows = rows.map(row => [row.team, row.amount || 0]);
     chart.draw(rows, 'top-teams', ['NOC', 'Amount']);
   }
 };
