@@ -4,7 +4,8 @@
   "description": "",
   "main": "stat",
   "scripts": {
-    "start": "sqlite3 ./data/olympic_history.db \".mode csv\"; sqlite3 ./data/olympic_history.db -separator ',' \".import ./data/athlete_events.csv temp\"; node import.js"
+    "import": "sqlite3 ./data/olympic_history.db \".mode csv\"; sqlite3 ./data/olympic_history.db -separator ',' \".import ./data/athlete_events.csv temp\"; node import.js",
+    "stat": "node stat.js"
   },
   "repository": {
     "type": "git",

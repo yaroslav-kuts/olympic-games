@@ -1,11 +1,11 @@
 #### Import data:
 ```sh
-npm start
+npm run import
 ```
 #### Usage:
 ```sh
-./stat [winter|summer] [team] [gold|silver|bronze]
+npm run stat [winter|summer] [team] [gold|silver|bronze]
 ```
 ```sh
-./stat [winter|summer] [year] [gold|silver|bronze]
+npm run stat stat [winter|summer] [year] [gold|silver|bronze]
 ```

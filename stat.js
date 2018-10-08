@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 const data = require('./libs/data');
 const chart = require('./libs/chart');
 const queries = require('./libs/queries');
