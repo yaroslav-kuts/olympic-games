@@ -31,7 +31,11 @@ const run = function (query, message) {
   };
 };
 
-const close = () => db.close();
+const close = (err, onclose) => {
+  if (onclose) onclose();
+  if (err) console.log(err.message);
+  db.close();
+};
 
 exports.run = run;
 exports.all = all;
