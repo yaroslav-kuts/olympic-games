@@ -124,6 +124,15 @@ const removeDuplicatesQuery =
 const trimAthleteNamesQuery =
   `update athletes set full_name = trim(full_name)`;
 
+const removeQuotemarksInAthleteNames =
+  `update athletes set full_name = replace(full_name, '"', '')`;
+
+const removeLeftBracketsQuery =
+  `update athletes set full_name = replace(full_name, '(', '')`;
+
+const removeRightBracketsQuery =
+  `update athletes set full_name = replace(full_name, ')', '')`;
+
 const getAmountOfMedalsQuery = function (season, noc, medal) {
   medal = medal ? `= ${medal}` : ` > 0`;
   return `select year year, res.num amount
@@ -186,6 +195,9 @@ module.exports = {
   multiCityProblemQuery           : multiCityProblemQuery,
   removeDuplicatesQuery           : removeDuplicatesQuery,
   trimAthleteNamesQuery           : trimAthleteNamesQuery,
+  removeQuotemarksInAthleteNames  : removeQuotemarksInAthleteNames,
+  removeLeftBracketsQuery         : removeLeftBracketsQuery,
+  removeRightBracketsQuery        : removeRightBracketsQuery,
   getAmountOfMedalsQuery          : getAmountOfMedalsQuery,
   getTopTeamsQuery                : getTopTeamsQuery
 };

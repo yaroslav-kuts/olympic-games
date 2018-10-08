@@ -33,6 +33,14 @@ const cleanGames = db.run(`delete from games`, `'Games' table was truncated.`);
 
 const cleanResults = db.run(`delete from results`, `'Results' table was truncated.`);
 
+const trimAthleteNames = db.run(queries.trimAthleteNamesQuery, `Athlete names were trimmed.`);
+
+const removeQuotemarksInAthleteNames = db.run(queries.removeQuotemarksInAthleteNames, `Quotemarks were removed.`);
+
+const removeLeftBrackets = db.run(queries.removeLeftBracketsQuery);
+
+const removeRightBrackets = db.run(queries.removeRightBracketsQuery, `Brackets were removed.`);
+
 const fillSportsTable = db.run(queries.fillSportsQuery, `'Sports' table has been fulfilled.`);
 
 const fillEventsTable = db.run(queries.fillEventsQuery, `'Events' table has been fulfilled.`);
@@ -50,8 +58,6 @@ const fillResulsTable = db.run(queries.fillResulsQuery, `'Results' table has bee
 const fillAthletesTable = db.run(queries.fillAthletesQuery, `'Athletes' table has been fulfilled.`);
 
 const removeTemp = db.run(`drop table temp`, `'Temp' table was removed.`);
-
-const trimAthleteNames = db.run(queries.trimAthleteNamesQuery, `Athlete names were trimmed.`);
 
 cleanResults()
   .then(cleanGames)
@@ -79,6 +85,9 @@ cleanResults()
   .then(dropAthletesIndex)
   .then(removeTemp)
   .then(trimAthleteNames)
+  .then(removeQuotemarksInAthleteNames)
+  .then(removeLeftBrackets)
+  .then(removeRightBrackets)
   .then(() => {
     db.close(null, () => {
       console.log('Data was imported to DB.');
