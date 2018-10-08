@@ -82,7 +82,7 @@ cleanResults()
   .then(() => {
     db.close(null, () => {
       console.log('Data was imported to DB.');
-    })
+    });
   })
   .catch((err) => {
     db.close(err, () => {
