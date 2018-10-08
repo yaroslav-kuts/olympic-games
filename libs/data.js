@@ -1,10 +1,9 @@
 const sqlite3 = require('sqlite3');
 const queries = require('./queries');
 
-const DB = './data/olympic_history.db';
+const db = new sqlite3.Database('./data/olympic_history.db');
 
 const prettifyName = () => {
-  const db = new sqlite3.Database(DB);;
 
   return new Promise((resolve, reject) => {
     db.each(queries.getNamesToAdjust, [], (err, row) => {
@@ -24,13 +23,11 @@ const prettifyName = () => {
       });
     });
   });
-  db.close();
 };
 
 const all = function (query) {
   return () => {
     return new Promise((resolve, reject) => {
-      const db = new sqlite3.Database(DB);
       db.all(query, [], (err, rows) => {
         if (err) {
           err.message = (`Query:\n'${query}'\n caused: ${err.message}`);
@@ -38,7 +35,6 @@ const all = function (query) {
         }
         resolve(rows);
       });
-      db.close();
     });
   };
 };
@@ -46,7 +42,6 @@ const all = function (query) {
 const run = function (query, message) {
   return () => {
     return new Promise((resolve, reject) => {
-      const db = new sqlite3.Database(DB);
       db.run(query, [], function (err) {
         if (err) {
           err.message = (`Query:\n'${query}'\n caused: ${err.message}`);
@@ -55,11 +50,13 @@ const run = function (query, message) {
         if (message) console.log(message);
         resolve();
       });
-      db.close();
     });
   };
 };
 
+const close = () => db.close();
+
 exports.prettifyName = prettifyName;
 exports.run = run;
 exports.all = all;
+exports.close = close;

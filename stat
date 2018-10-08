@@ -24,10 +24,16 @@ const show = async function (args) {
     else if (teams.some(noc => noc.noc_name === arg.toUpperCase())) {
       noc = arg.toUpperCase();
     }
-    else throw new Error(`Unrecognisable param: ${arg}`);
+    else {
+      throw new Error(`Unrecognisable param: ${arg}`);
+      data.close();
+    }
   });
 
-  if (season === undefined) throw new Error('You have to specify season param!');
+  if (season === undefined) {
+    throw new Error('You have to specify season param!');
+    data.close();
+  }
 
   if (noc) {
     const getAmountOfMedals = data.all(queries.getAmountOfMedalsQuery(season, noc, medal));
@@ -40,6 +46,8 @@ const show = async function (args) {
     rows = rows.map(row => [row.NOC, row.Amount || 0]);
     chart.draw(rows, 'top-teams', ['NOC', 'Amount']);
   }
+
+  data.close();
 };
 
 if (!module.parent) show(process.argv.slice(2));

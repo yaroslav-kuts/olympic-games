@@ -79,3 +79,5 @@ cleanResults()
   .then(data.prettifyName)
   .then(() => { console.log('Data was imported to DB!'); })
   .catch((err) => { console.log(err.message); });
+
+data.close();
