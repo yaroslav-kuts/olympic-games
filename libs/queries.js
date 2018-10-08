@@ -31,6 +31,10 @@ const removeUnofficialYearRecordsQuery =
 
 const cleanSportsTable = `delete from sports`;
 
+const getTeamsQuery = `select noc_name team from teams`;
+
+const getYearsQuery = `select distinct year from games`;
+
 const fillSportsQuery =
   `insert into sports (name)
    select distinct sport from temp
@@ -171,6 +175,8 @@ module.exports = {
   dropAthletesIndex               : dropAthletesIndex,
   removeUnofficialYearRecordsQuery: removeUnofficialYearRecordsQuery,
   cleanSportsTable                : cleanSportsTable,
+  getTeamsQuery                   : getTeamsQuery,
+  getYearsQuery                   : getYearsQuery,
   fillSportsQuery                 : fillSportsQuery,
   fillEventsQuery                 : fillEventsQuery,
   fillTeamsQuery                  : fillTeamsQuery,
